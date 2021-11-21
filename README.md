@@ -18,3 +18,5 @@ python data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" s
 ```
 
 Or edit [data_download.sh](./data_download.sh) then execute it.
+
+Note: The downloader will concatenate the existing data with the incoming data. i.e Neither overwritten nor duplicated will happen.
