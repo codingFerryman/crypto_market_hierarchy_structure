@@ -17,4 +17,4 @@ Execute from [data_downloader.py](./data_downloader.py). An example:
 python data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" start="20210101" end="20211101" interval="1m"
 ```
 
-Or edit the [data_download.sh](./data_download.sh) then execute it.
+Or edit [data_download.sh](./data_download.sh) then execute it.
