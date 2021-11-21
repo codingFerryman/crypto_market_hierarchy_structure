@@ -4,7 +4,7 @@ This project is still in progress.
 
 
 ## Setup
-After cloning this repository, create or activate a virtual environment, then execute:
+After cloning this repository, please create or activate a virtual environment, then execute:
 ```bash
 cd PATH-TO-REPO-DIR
 bash ./setup_env.sh
