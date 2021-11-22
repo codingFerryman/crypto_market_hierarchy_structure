@@ -100,9 +100,9 @@ class BitfinexDownloader(DataDownloader):
         elif interval_unit == 'h':
             interval_unit_sec = 60 * 60
         elif interval_unit == 'D':
-            interval_unit_sec = 24 * 50 * 60
+            interval_unit_sec = 24 * 60 * 60
         elif interval_unit == 'W':
-            interval_unit_sec = 7 * 24 * 50 * 60
+            interval_unit_sec = 7 * 24 * 60 * 60
         interval_sec = int(self.interval[:-1])*interval_unit_sec
         if (self.end_timestamp-self.start_timestamp)//interval_sec <= self.limitation:
             logger.debug("The requested data can be downloaded in 1 request")
