@@ -12,9 +12,9 @@ bash ./setup_env.sh
 
 ## Execution
 ### Download data
-Execute from [data_downloader.py](./data_downloader.py). An example:
+Execute from [data_downloader.py](src/data_downloader.py). An example:
 ```python3
-python data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" start="20210101" end="20211101" interval="1m"
+python src/data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" start="20210101" end="20211101" interval="1m"
 ```
 Arguments:
 - coin: "code-of-coin(s)", separated by comma(s). Codes should exist [here](https://api-pub.bitfinex.com/v2/conf/pub:list:pair:exchange) as "codeUSD" or "code:USD".
