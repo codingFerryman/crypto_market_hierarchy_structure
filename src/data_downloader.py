@@ -54,7 +54,7 @@ class BitfinexDownloader(DataDownloader):
         self.limitation = limitation
 
         if save_path is None:
-            save_path = Path('.', 'data', f'{symbol}_{interval}.csv')
+            save_path = Path('..', 'data', f'{symbol}_{interval}.csv')
         super(BitfinexDownloader, self).__init__(symbol, start_date, end_date, save_path)
 
         self.urls = []
