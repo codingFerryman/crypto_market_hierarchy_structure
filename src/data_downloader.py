@@ -1,5 +1,5 @@
 import sys
-from typing import List, Tuple, Union, Any
+from typing import Tuple
 import requests
 import ciso8601
 import time
