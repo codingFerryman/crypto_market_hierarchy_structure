@@ -65,7 +65,10 @@ class BitfinexDownloader(DataDownloader):
         :param save_path: output path
         """
         self.base_url = "https://api-pub.bitfinex.com/v2/"
+        self.coin = coin
         symbol = self.convert_coin_to_symbol(coin)
+        self.start_date_raw = start_date
+        self.end_date_raw = end_date
         start_date = time.mktime(ciso8601.parse_datetime(start_date).timetuple())
         end_date = time.mktime(ciso8601.parse_datetime(end_date).timetuple())
 
@@ -76,7 +79,7 @@ class BitfinexDownloader(DataDownloader):
         self.limitation = limitation
 
         if save_path is None:
-            save_path = Path('..', 'data', f'{symbol}_{interval}.csv')
+            save_path = Path(Path(__file__).parent.resolve(), '..', 'data', f'{symbol}_{interval}.csv')
         super(BitfinexDownloader, self).__init__(symbol, start_date, end_date, save_path)
 
         self.urls = []
@@ -115,7 +118,7 @@ class BitfinexDownloader(DataDownloader):
         """
         Divide the request to meet the requirement (API limitation)
         :param interval_sec: i.e. frequency of price changes (in seconds)
-        :return: 
+        :return: list of timestamp ranges
         """
         # Divide the requested date range into _n ranges
         _n = math.ceil(((self.end_timestamp-self.start_timestamp) // interval_sec) / self.limitation)
@@ -178,7 +181,6 @@ class BitfinexDownloader(DataDownloader):
     def download_and_save_candle(self):
         """
         Save the downloaded data to a file
-        :return:
         """
         assert (len(self.urls) > 0), "Please generate urls before downloading"
         urls_n = len(self.urls)
@@ -203,6 +205,9 @@ class BitfinexDownloader(DataDownloader):
         result_df.index.name = 'timestamp'
         result_df = result_df.sort_index()
         result_df.to_csv(self.save_path)
+        logger.info(f"The {self.interval} price of coin {self.coin} "
+                    f"from {self.start_date_raw} 00h00m to {self.end_date_raw} 00h00m has been saved to ")
+        logger.info(f" \n {self.save_path}")
 
 
 def main(args: List[str]):
