@@ -1,5 +1,5 @@
 import sys
-
+from typing import List, Tuple, Union, Any
 import requests
 import ciso8601
 import time
@@ -15,6 +15,13 @@ logger = get_logger('downloader', True)
 
 class DataDownloader(object):
     def __init__(self, symbol, start_timestamp, end_timestamp, save_path):
+        """
+        Initialization
+        :param symbol: the code of a crypto
+        :param start_timestamp: the first day (incl.)
+        :param end_timestamp: the last day (NOT incl.)
+        :param save_path: output path
+        """
         self.symbol = symbol
         self.start_timestamp = int(start_timestamp)
         self.end_timestamp = int(end_timestamp)
@@ -22,6 +29,12 @@ class DataDownloader(object):
 
     @staticmethod
     def request_until_success(url, wait_seconds_if_fail=65):
+        """
+        Download data by HTTPS request
+        :param url: requested URL
+        :param wait_seconds_if_fail: wait specified seconds if the response is not 200 OK
+        :return: raw text
+        """
         response = requests.get(url)
         code = response.status_code
         while code != 200:
@@ -42,6 +55,15 @@ class BitfinexDownloader(DataDownloader):
                  limitation=9990,
                  save_path=None
                  ):
+        """
+        Data downloader for Bitfinex
+        :param coin: the code of a crypto
+        :param start_date: the first day (incl.) YYYYMMDD or YYYY-MM-DD
+        :param end_date: the last day (NOT incl.) YYYYMMDD or YYYY-MM-DD
+        :param interval: i.e. frequency of price changes
+        :param limitation: the maximum number of entries per request
+        :param save_path: output path
+        """
         self.base_url = "https://api-pub.bitfinex.com/v2/"
         symbol = self.convert_coin_to_symbol(coin)
         start_date = time.mktime(ciso8601.parse_datetime(start_date).timetuple())
@@ -61,6 +83,12 @@ class BitfinexDownloader(DataDownloader):
         self.urls_datetime = []
 
     def _convert_coin_to_symbol(self, coin, pair_currency):
+        """
+        Check and adapt the input to the supported format
+        :param coin: the code of a crypto
+        :param pair_currency: fiat currency
+        :return: Adapted code
+        """
         _text = self.request_until_success('https://api-pub.bitfinex.com/v2/conf/pub:list:pair:exchange')
         symbol_supported = ast.literal_eval(_text)[0]
         _symbol_1 = coin.upper() + pair_currency.upper()
@@ -73,11 +101,22 @@ class BitfinexDownloader(DataDownloader):
             raise Exception('Coin {coin} or currency {pair_currency} is not supported.')
 
     def convert_coin_to_symbol(self, coin, pair_currency='USD'):
+        """
+        Adapt the input to the supported format
+        :param coin: the code of a crypto
+        :param pair_currency: fiat currency (it only supports USD right now)
+        :return: Code for request
+        """
         _symbol = self._convert_coin_to_symbol(coin, pair_currency)
         symbol = 't' + _symbol
         return symbol
 
-    def _generate_timestamp_list(self, interval_sec):
+    def _generate_timestamp_list(self, interval_sec) -> List[Tuple[int, int]]:
+        """
+        Divide the request to meet the requirement (API limitation)
+        :param interval_sec: i.e. frequency of price changes (in seconds)
+        :return: 
+        """
         # Divide the requested date range into _n ranges
         _n = math.ceil(((self.end_timestamp-self.start_timestamp) // interval_sec) / self.limitation)
         logger.debug(f"The requested data has to be downloaded in {_n} requests")
@@ -93,6 +132,10 @@ class BitfinexDownloader(DataDownloader):
         return result
 
     def generate_timestamp_list(self):
+        """
+        Convert the specified interval dates to timestamp
+        :return: list of timestamp ranges
+        """
         interval_unit = self.interval[-1]
         interval_unit_sec = None
         if interval_unit == 'm':
@@ -110,7 +153,11 @@ class BitfinexDownloader(DataDownloader):
         else:
             return self._generate_timestamp_list(interval_sec)
 
-    def generate_candle_request_url_list(self):
+    def generate_candle_request_url_list(self) -> List[str]:
+        """
+        Generate the list of timestamp ranges to URLs
+        :return: the list of URLs
+        """
         path_params = f"candles/trade:{self.interval}:{self.symbol}/hist"
 
         timestamp_list = self.generate_timestamp_list()
@@ -129,6 +176,10 @@ class BitfinexDownloader(DataDownloader):
         return self.urls
 
     def download_and_save_candle(self):
+        """
+        Save the downloaded data to a file
+        :return:
+        """
         assert (len(self.urls) > 0), "Please generate urls before downloading"
         urls_n = len(self.urls)
 
