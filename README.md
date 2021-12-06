@@ -27,5 +27,7 @@ Or edit [data_download.sh](./data_download.sh) then execute it.
 
 Note: The downloader will concatenate the existing data with the incoming data. Existing entries with the same timestamps will be updated.
 
-## Changelog
-[06 December 2021] The code of coins are in the output files after [commit f72d222](https://github.com/codingFerryman/crypto_market_hierarchy_structure/tree/f72d2225edaabeeee33009772324624339e49b8b), data files downloaded before this commit can be upgraded by downloading any data (with the same coin and interval settings).
+Attention for data attributes change: The code of coins is included in the output files after [commit f72d222](https://github.com/codingFerryman/crypto_market_hierarchy_structure/tree/f72d2225edaabeeee33009772324624339e49b8b), data files downloaded before this commit can be upgraded by downloading any data (with the same coin and interval settings) with the new [data_downloader.py](src/data_downloader.py).
+
+
+
