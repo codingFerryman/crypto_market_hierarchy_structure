@@ -56,7 +56,8 @@ class BitfinexDownloader(DataDownloader):
                  end_date: str = '20210801',  # NOT included!
                  interval: str = '1D',
                  limitation=9995,
-                 save_path=None
+                 save_path=None,
+                 pair_currency='USD'
                  ):
         """
         Data downloader for Bitfinex
@@ -66,9 +67,11 @@ class BitfinexDownloader(DataDownloader):
         :param interval: i.e. frequency of price changes
         :param limitation: the maximum number of entries per request
         :param save_path: output path
+        :param pair_currency: fiat currency, only support 'USD'
         """
         self.base_url = "https://api-pub.bitfinex.com/v2/"
         self.coin = coin
+        self.pair_currency = 'USD'
         symbol = self.convert_coin_to_symbol(coin)
         self.start_date_raw = start_date
         self.end_date_raw = end_date
@@ -85,7 +88,7 @@ class BitfinexDownloader(DataDownloader):
             _save_dir = Path(Path(__file__).parent.resolve(), '..', 'data', interval).resolve()
             if not _save_dir.is_dir():
                 _save_dir.mkdir(parents=True, exist_ok=True)
-            save_path = Path(_save_dir, f'{symbol}_{interval}.csv')
+            save_path = Path(_save_dir, f'{coin}_{self.pair_currency}_{interval}.csv')
         super(BitfinexDownloader, self).__init__(symbol, start_date, end_date, save_path)
 
         self.urls = []
@@ -109,14 +112,13 @@ class BitfinexDownloader(DataDownloader):
         else:
             raise Exception('Coin {coin} or currency {pair_currency} is not supported.')
 
-    def convert_coin_to_symbol(self, coin, pair_currency='USD'):
+    def convert_coin_to_symbol(self, coin):
         """
         Adapt the input to the supported format
         :param coin: the code of a crypto
-        :param pair_currency: fiat currency (it only supports USD right now)
         :return: Code for request
         """
-        _symbol = self._convert_coin_to_symbol(coin, pair_currency)
+        _symbol = self._convert_coin_to_symbol(coin, self.pair_currency)
         symbol = 't' + _symbol
         return symbol
 
