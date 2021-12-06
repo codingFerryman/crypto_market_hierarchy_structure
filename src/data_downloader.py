@@ -1,3 +1,5 @@
+import itertools
+import logging
 import sys
 from typing import Tuple
 import requests
@@ -9,8 +11,9 @@ import math
 import ast
 from typing import List
 from utils import get_logger, timestamp_to_datestring
+from tqdm.auto import tqdm
 
-logger = get_logger('downloader', True)
+logger = get_logger('downloader', "info")
 
 
 class DataDownloader(object):
@@ -202,7 +205,7 @@ class BitfinexDownloader(DataDownloader):
         _empty_entries_len = 0
         for idx, url in enumerate(self.urls):
             datetime_range = self.urls_datetime[idx]
-            logger.info(
+            logger.debug(
                 f"({idx + 1}/{urls_n}) Requesting: {self.symbol} from {datetime_range[0]} to {datetime_range[1]}")
             _tmp_data = ast.literal_eval(self.request_until_success(url))
             _tmp_data = pd.DataFrame(data=_tmp_data, columns=source_col_name)
@@ -227,9 +230,9 @@ class BitfinexDownloader(DataDownloader):
             result_df.set_index(['timestamp', 'coin'], inplace=True)
             result_df = result_df.sort_index()
             result_df.to_csv(self.save_path)
-            logger.info(f"The {self.interval} price of coin {self.coin} "
-                        f"from {self.start_date_raw} 00h00m to {self.end_date_raw} 00h00m has been saved to ")
-            logger.info(f"{Path(self.save_path).resolve()}")
+            logger.debug(f"The {self.interval} price of coin {self.coin} "
+                         f"from {self.start_date_raw} 00h00m to {self.end_date_raw} 00h00m has been saved to ")
+            logger.debug(f"{Path(self.save_path).resolve()}")
             return
 
 
@@ -242,10 +245,14 @@ def main(args: List[str] = None):
     coins_list = coins.split(',')
     start_date = argv.get('start', '20210201')
     end_date = argv.get('end', '20210501')
-    interval = argv.get('interval', '1h')
+    intervals = argv.get('interval', '1h')
+    intervals_list = intervals.split(',')
     output = argv.get('output', None)
 
-    for coin in coins_list:
+    _zipped_list = list(itertools.product(coins_list, intervals_list))
+    logger.info(f"Downloading: {len(coins_list)} coin(s) from {start_date} to {end_date} in {intervals_list} ...")
+
+    for coin, interval in tqdm(_zipped_list) if logger.level != logging.DEBUG else _zipped_list:
         d = BitfinexDownloader(coin=coin, start_date=start_date, end_date=end_date, interval=interval, save_path=output)
         d.generate_candle_request_url_list()
         d.download_and_save_candle()
@@ -253,3 +260,4 @@ def main(args: List[str] = None):
 
 if __name__ == '__main__':
     main(sys.argv)
+    # main()
