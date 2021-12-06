@@ -55,7 +55,7 @@ class BitfinexDownloader(DataDownloader):
                  start_date: str = '20210601',
                  end_date: str = '20210801',  # NOT included!
                  interval: str = '1D',
-                 limitation=9990,
+                 limitation=9995,
                  save_path=None
                  ):
         """
@@ -218,12 +218,12 @@ class BitfinexDownloader(DataDownloader):
 
         if _empty_entries_len == len(self.urls):
             logger.warning(f"NO DATA returned: The {self.interval} price of coin {self.coin} "
-                           f"from {self.start_date_raw} 00h00m to {self.end_date_raw}")
+                           f"from {self.start_date_raw} to {self.end_date_raw}")
             return
         else:
             if _empty_entries_len > 0:
                 logger.warning(f"Has MISSING DATA: The {self.interval} price of coin {self.coin} "
-                               f"from {self.start_date_raw} 00h00m to {self.end_date_raw}")
+                               f"from {self.start_date_raw} to {self.end_date_raw}")
             result_df = pd.DataFrame.from_dict(result_dict, orient='index')
             result_df['coin'] = [self.coin] * len(result_df)
             result_df['timestamp'] = result_df.index
@@ -256,6 +256,7 @@ def main(args: List[str] = None):
         d = BitfinexDownloader(coin=coin, start_date=start_date, end_date=end_date, interval=interval, save_path=output)
         d.generate_candle_request_url_list()
         d.download_and_save_candle()
+    logger.info(f"Downloaded!\n")
 
 
 if __name__ == '__main__':
