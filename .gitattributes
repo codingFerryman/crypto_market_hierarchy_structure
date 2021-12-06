@@ -1,5 +1,5 @@
 # Pickles
 *.pkl binary
-
 # Jupyter notebook
 *.ipynb linguist-documentation
+data filter=lfs diff=lfs merge=lfs -text
