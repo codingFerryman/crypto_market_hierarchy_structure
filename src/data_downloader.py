@@ -187,14 +187,15 @@ class BitfinexDownloader(DataDownloader):
 
         source_col_name = ['timestamp', 'open', 'close', 'high', 'low', 'volume']
 
-        if self.save_path.is_file():
+        if Path(self.save_path).is_file():
             result_dict = pd.read_csv(self.save_path, index_col='timestamp').to_dict('index')
         else:
             result_dict = {}
 
         for idx, url in enumerate(self.urls):
             datetime_range = self.urls_datetime[idx]
-            logger.info(f"({idx+1}/{urls_n}) Requesting: {self.symbol} from {datetime_range[0]} to {datetime_range[1]}")
+            logger.info(
+                f"({idx + 1}/{urls_n}) Requesting: {self.symbol} from {datetime_range[0]} to {datetime_range[1]}")
             _tmp_data = ast.literal_eval(self.request_until_success(url))
             _tmp_data = pd.DataFrame(data=_tmp_data, columns=source_col_name)
             _tmp_data['datetime'] = _tmp_data.timestamp.apply(timestamp_to_datestring)
@@ -202,27 +203,34 @@ class BitfinexDownloader(DataDownloader):
             result_dict.update(_tmp_dict)
 
         result_df = pd.DataFrame.from_dict(result_dict, orient='index')
-        result_df.index.name = 'timestamp'
+        result_df['coin'] = [self.coin] * len(result_df)
+        result_df['timestamp'] = result_df.index
+        result_df.set_index(['timestamp', 'coin'], inplace=True)
         result_df = result_df.sort_index()
         result_df.to_csv(self.save_path)
         logger.info(f"The {self.interval} price of coin {self.coin} "
                     f"from {self.start_date_raw} 00h00m to {self.end_date_raw} 00h00m has been saved to ")
-        logger.info(f" \n {self.save_path}")
+        logger.info(f"{Path(self.save_path).resolve()}")
 
 
-def main(args: List[str]):
-    argv = {a.split('=')[0]: a.split('=')[1] for a in args[1:]}
+def main(args: List[str] = None):
+    if args is None:
+        argv = {}
+    else:
+        argv = {a.split('=')[0]: a.split('=')[1] for a in args[1:]}
     coins = argv.get('coin', 'BTC')
     coins_list = coins.split(',')
-    start_date = argv.get('start', '20210101')
-    end_date = argv.get('end', '20210601')
-    interval = argv.get('interval', '15m')
+    start_date = argv.get('start', '20210201')
+    end_date = argv.get('end', '20210501')
+    interval = argv.get('interval', '1h')
+    output = argv.get('output', 'sample_data_tBTCUSD_1h')
 
     for coin in coins_list:
-        d = BitfinexDownloader(coin=coin, start_date=start_date, end_date=end_date, interval=interval)
+        d = BitfinexDownloader(coin=coin, start_date=start_date, end_date=end_date, interval=interval, save_path=output)
         d.generate_candle_request_url_list()
         d.download_and_save_candle()
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()
+    # main(sys.argv)
