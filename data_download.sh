@@ -8,10 +8,21 @@
 # All codes
 CODES=$(tr -d "\n\r" < cryptocurrency_code.txt)
 
+# Intervals
+INTERVALS="1W,1D,3h"
+
 # Download
 python src/data_downloader.py \
 coin=$CODES \
 start="2021-01-13" \
 end="2021-03-14" \
-interval="1W" \
-# output="./output.csv"
+interval=$INTERVALS
+
+python src/data_downloader.py \
+coin=$CODES \
+start="2021-08-15" \
+end="2021-10-16" \
+interval=$INTERVALS
+
+
+
