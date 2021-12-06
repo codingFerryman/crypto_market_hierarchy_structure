@@ -20,9 +20,14 @@ Arguments:
 - coin: "code-of-coin(s)", separated by comma(s). Codes should exist [here](https://api-pub.bitfinex.com/v2/conf/pub:list:pair:exchange) as "codeUSD" or "code:USD".
 - start: "YYYYMMDD" or "YYYY-MM-DD", included.
 - end: "YYYYMMDD" or "YYYY-MM-DD", NOT included.
-- interval: One of ['1m', '5m', '15m', '30m', '1h', '3h', '6h', '12h', '1D', '1W']
-- output: (Optional) The path of output file
+- interval: One of ['1m', '5m', '15m', '30m', '1h', '3h', '6h', '12h', '1D', '1W'].
+- output: (Optional) The path of output file.
 
 Or edit [data_download.sh](./data_download.sh) then execute it.
 
 Note: The downloader will concatenate the existing data with the incoming data. Existing entries with the same timestamps will be updated.
+
+Attention for data attributes change: The code of coins is included in the output files after [commit f72d222](https://github.com/codingFerryman/crypto_market_hierarchy_structure/tree/f72d2225edaabeeee33009772324624339e49b8b), data files downloaded before this commit can be upgraded by downloading any data (with the same coin and interval settings) using the new [data_downloader.py](src/data_downloader.py).
+
+
+
