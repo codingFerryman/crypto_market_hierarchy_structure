@@ -79,7 +79,10 @@ class BitfinexDownloader(DataDownloader):
         self.limitation = limitation
 
         if save_path is None:
-            save_path = Path(Path(__file__).parent.resolve(), '..', 'data', f'{symbol}_{interval}.csv')
+            _save_dir = Path(Path(__file__).parent.resolve(), '..', 'data', interval).resolve()
+            if not _save_dir.is_dir():
+                _save_dir.mkdir(parents=True, exist_ok=True)
+            save_path = Path(_save_dir, f'{symbol}_{interval}.csv')
         super(BitfinexDownloader, self).__init__(symbol, start_date, end_date, save_path)
 
         self.urls = []
@@ -121,7 +124,7 @@ class BitfinexDownloader(DataDownloader):
         :return: list of timestamp ranges
         """
         # Divide the requested date range into _n ranges
-        _n = math.ceil(((self.end_timestamp-self.start_timestamp) // interval_sec) / self.limitation)
+        _n = math.ceil(((self.end_timestamp - self.start_timestamp) // interval_sec) / self.limitation)
         logger.debug(f"The requested data has to be downloaded in {_n} requests")
         result = []
         _start = self.start_timestamp
@@ -149,8 +152,8 @@ class BitfinexDownloader(DataDownloader):
             interval_unit_sec = 24 * 60 * 60
         elif interval_unit == 'W':
             interval_unit_sec = 7 * 24 * 60 * 60
-        interval_sec = int(self.interval[:-1])*interval_unit_sec
-        if (self.end_timestamp-self.start_timestamp)//interval_sec <= self.limitation:
+        interval_sec = int(self.interval[:-1]) * interval_unit_sec
+        if (self.end_timestamp - self.start_timestamp) // interval_sec <= self.limitation:
             logger.debug("The requested data can be downloaded in 1 request")
             return [(self.start_timestamp, self.end_timestamp)]
         else:
@@ -166,16 +169,17 @@ class BitfinexDownloader(DataDownloader):
         timestamp_list = self.generate_timestamp_list()
         query_params_list = []
         for timestamp_tuple in timestamp_list:
-            _start_timestamp = int(timestamp_tuple[0]*1000)
-            _end_timestamp = int(timestamp_tuple[1]*1000)
+            _start_timestamp = int(timestamp_tuple[0] * 1000)
+            _end_timestamp = int(timestamp_tuple[1] * 1000)
             query_params = f"?limit={10000}&start={_start_timestamp}&end={_end_timestamp}&sort=1"
             query_params_list.append(query_params)
         for query_params in query_params_list:
             url = self.base_url + path_params + query_params
             self.urls.append(url)
 
-        self.urls_datetime = [(timestamp_to_datestring(time_tuple[0]*1000), timestamp_to_datestring(time_tuple[1]*1000))
-                              for time_tuple in timestamp_list]
+        self.urls_datetime = [
+            (timestamp_to_datestring(time_tuple[0] * 1000), timestamp_to_datestring(time_tuple[1] * 1000))
+            for time_tuple in timestamp_list]
         return self.urls
 
     def download_and_save_candle(self):
@@ -195,6 +199,7 @@ class BitfinexDownloader(DataDownloader):
         else:
             result_dict = {}
 
+        _empty_entries_len = 0
         for idx, url in enumerate(self.urls):
             datetime_range = self.urls_datetime[idx]
             logger.info(
@@ -203,17 +208,29 @@ class BitfinexDownloader(DataDownloader):
             _tmp_data = pd.DataFrame(data=_tmp_data, columns=source_col_name)
             _tmp_data['datetime'] = _tmp_data.timestamp.apply(timestamp_to_datestring)
             _tmp_dict = _tmp_data.set_index('timestamp').to_dict('index')
-            result_dict.update(_tmp_dict)
+            if len(_tmp_dict) == 0:
+                _empty_entries_len += 1
+            else:
+                result_dict.update(_tmp_dict)
 
-        result_df = pd.DataFrame.from_dict(result_dict, orient='index')
-        result_df['coin'] = [self.coin] * len(result_df)
-        result_df['timestamp'] = result_df.index
-        result_df.set_index(['timestamp', 'coin'], inplace=True)
-        result_df = result_df.sort_index()
-        result_df.to_csv(self.save_path)
-        logger.info(f"The {self.interval} price of coin {self.coin} "
-                    f"from {self.start_date_raw} 00h00m to {self.end_date_raw} 00h00m has been saved to ")
-        logger.info(f"{Path(self.save_path).resolve()}")
+        if _empty_entries_len == len(self.urls):
+            logger.warning(f"NO DATA returned: The {self.interval} price of coin {self.coin} "
+                           f"from {self.start_date_raw} 00h00m to {self.end_date_raw}")
+            return
+        else:
+            if _empty_entries_len > 0:
+                logger.warning(f"Has MISSING DATA: The {self.interval} price of coin {self.coin} "
+                               f"from {self.start_date_raw} 00h00m to {self.end_date_raw}")
+            result_df = pd.DataFrame.from_dict(result_dict, orient='index')
+            result_df['coin'] = [self.coin] * len(result_df)
+            result_df['timestamp'] = result_df.index
+            result_df.set_index(['timestamp', 'coin'], inplace=True)
+            result_df = result_df.sort_index()
+            result_df.to_csv(self.save_path)
+            logger.info(f"The {self.interval} price of coin {self.coin} "
+                        f"from {self.start_date_raw} 00h00m to {self.end_date_raw} 00h00m has been saved to ")
+            logger.info(f"{Path(self.save_path).resolve()}")
+            return
 
 
 def main(args: List[str] = None):
