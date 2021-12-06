@@ -188,7 +188,10 @@ class BitfinexDownloader(DataDownloader):
         source_col_name = ['timestamp', 'open', 'close', 'high', 'low', 'volume']
 
         if Path(self.save_path).is_file():
-            result_dict = pd.read_csv(self.save_path, index_col='timestamp').to_dict('index')
+            _tmp_result_df = pd.read_csv(self.save_path, index_col='timestamp')
+            if 'coin' not in _tmp_result_df.columns:
+                _tmp_result_df['coin'] = self.coin
+            result_dict = _tmp_result_df.to_dict('index')
         else:
             result_dict = {}
 
@@ -223,7 +226,7 @@ def main(args: List[str] = None):
     start_date = argv.get('start', '20210201')
     end_date = argv.get('end', '20210501')
     interval = argv.get('interval', '1h')
-    output = argv.get('output', 'sample_data_tBTCUSD_1h')
+    output = argv.get('output', None)
 
     for coin in coins_list:
         d = BitfinexDownloader(coin=coin, start_date=start_date, end_date=end_date, interval=interval, save_path=output)
@@ -232,5 +235,4 @@ def main(args: List[str] = None):
 
 
 if __name__ == '__main__':
-    main()
-    # main(sys.argv)
+    main(sys.argv)
