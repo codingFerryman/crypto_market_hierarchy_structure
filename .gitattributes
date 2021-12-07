@@ -4,4 +4,4 @@
 *.ipynb linguist-documentation
 # Track data (Git LFS)
 data/** filter=lfs diff=lfs merge=lfs -text
-data/sample_data_BTC_USD_1D.csv !filter !diff !merge text
+data/sample* !filter !diff !merge text
