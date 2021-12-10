@@ -15,9 +15,9 @@ def check_integrity(start_at, end_before, csv_file, interval=None):
     Check the integrity of a datafile
     :param start_at: YYYYMMDD the start date
     :param end_before: YYYYMMDD the end date
-    :param csv_file: data file
+    :param csv_file: data csv file path
     :param interval: default by the interval in the filename
-    :return: return complete data or None
+    :return: return the complete data in the given period, or None
     """
     integrity_flag = False
     start_timestamp = datestring_to_timestamp(start_at)
@@ -62,7 +62,8 @@ def interval_to_ms(interval: str):
     interval_ms = int(interval[:-1]) * interval_unit_sec * 1000
     return interval_ms
 
-def get_logger(name: str, level='debug'):
+
+def get_logger(name: str, level='info'):
     fmt = '[%(asctime)s] - %(name)s - {line:%(lineno)d} %(levelname)s - %(message)s'
     logger = logging.getLogger(name=name)
     if level.lower() == 'debug':
