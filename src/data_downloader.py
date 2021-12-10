@@ -10,7 +10,7 @@ import pandas as pd
 import math
 import ast
 from typing import List
-from utils import get_logger, timestamp_to_datestring
+from utils import get_logger, timestamp_to_datestring, interval_to_ms, datestring_to_timestamp
 from tqdm.auto import tqdm
 
 logger = get_logger('downloader', "info")
@@ -75,8 +75,8 @@ class BitfinexDownloader(DataDownloader):
         symbol = self.convert_coin_to_symbol(coin)
         self.start_date_raw = start_date
         self.end_date_raw = end_date
-        start_date = time.mktime(ciso8601.parse_datetime(start_date).timetuple())
-        end_date = time.mktime(ciso8601.parse_datetime(end_date).timetuple())
+        start_date = datestring_to_timestamp(start_date)
+        end_date = datestring_to_timestamp(end_date)
 
         supported_interval = ['1m', '5m', '15m', '30m', '1h', '3h', '6h', '12h', '1D', '1W']
         assert (interval in supported_interval), f"Interval {interval} is not supported."
@@ -122,22 +122,22 @@ class BitfinexDownloader(DataDownloader):
         symbol = 't' + _symbol
         return symbol
 
-    def _generate_timestamp_list(self, interval_sec) -> List[Tuple[int, int]]:
+    def _generate_timestamp_list(self, interval_ms) -> List[Tuple[int, int]]:
         """
         Divide the request to meet the requirement (API limitation)
         :param interval_sec: i.e. frequency of price changes (in seconds)
         :return: list of timestamp ranges
         """
         # Divide the requested date range into _n ranges
-        _n = math.ceil(((self.end_timestamp - self.start_timestamp) // interval_sec) / self.limitation)
+        _n = math.ceil(((self.end_timestamp - self.start_timestamp) // interval_ms) / self.limitation)
         logger.debug(f"The requested data has to be downloaded in {_n} requests")
         result = []
         _start = self.start_timestamp
         i = 1
         while i < _n:
-            _end = _start + interval_sec * (self.limitation - 1)
+            _end = _start + interval_ms * (self.limitation - 1)
             result.append((_start, _end))
-            _start = _end + interval_sec
+            _start = _end + interval_ms
             i += 1
         result.append((_start, self.end_timestamp))
         return result
@@ -147,22 +147,12 @@ class BitfinexDownloader(DataDownloader):
         Convert the specified interval dates to timestamp
         :return: list of timestamp ranges
         """
-        interval_unit = self.interval[-1]
-        interval_unit_sec = None
-        if interval_unit == 'm':
-            interval_unit_sec = 60
-        elif interval_unit == 'h':
-            interval_unit_sec = 60 * 60
-        elif interval_unit == 'D':
-            interval_unit_sec = 24 * 60 * 60
-        elif interval_unit == 'W':
-            interval_unit_sec = 7 * 24 * 60 * 60
-        interval_sec = int(self.interval[:-1]) * interval_unit_sec
-        if (self.end_timestamp - self.start_timestamp) // interval_sec <= self.limitation:
+        interval_ms = interval_to_ms(self.interval)
+        if (self.end_timestamp - self.start_timestamp) // interval_ms <= self.limitation:
             logger.debug("The requested data can be downloaded in 1 request")
             return [(self.start_timestamp, self.end_timestamp)]
         else:
-            return self._generate_timestamp_list(interval_sec)
+            return self._generate_timestamp_list(interval_ms)
 
     def generate_candle_request_url_list(self) -> List[str]:
         """
@@ -174,16 +164,16 @@ class BitfinexDownloader(DataDownloader):
         timestamp_list = self.generate_timestamp_list()
         query_params_list = []
         for timestamp_tuple in timestamp_list:
-            _start_timestamp = int(timestamp_tuple[0] * 1000)
-            _end_timestamp = int(timestamp_tuple[1] * 1000)
-            query_params = f"?limit={10000}&start={_start_timestamp}&end={_end_timestamp}&sort=1"
+            _start_timestamp = int(timestamp_tuple[0])
+            _end_timestamp = int(timestamp_tuple[1])
+            query_params = f"?limit={self.limitation}&start={_start_timestamp}&end={_end_timestamp}&sort=1"
             query_params_list.append(query_params)
         for query_params in query_params_list:
             url = self.base_url + path_params + query_params
             self.urls.append(url)
 
         self.urls_datetime = [
-            (timestamp_to_datestring(time_tuple[0] * 1000), timestamp_to_datestring(time_tuple[1] * 1000))
+            (timestamp_to_datestring(time_tuple[0]), timestamp_to_datestring(time_tuple[1]))
             for time_tuple in timestamp_list]
         return self.urls
 
