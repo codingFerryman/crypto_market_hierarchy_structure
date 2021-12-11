@@ -64,7 +64,7 @@ def interval_to_ms(interval: str):
 
 
 def get_logger(name: str, level='info'):
-    fmt = '[%(asctime)s] - %(name)s - {line:%(lineno)d} %(levelname)s - %(message)s'
+    fmt = '\n[%(asctime)s] - %(name)s - {line:%(lineno)d} %(levelname)s - %(message)s'
     logger = logging.getLogger(name=name)
     if level.lower() == 'debug':
         logger.setLevel(logging.DEBUG)
