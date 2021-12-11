@@ -31,7 +31,7 @@ class DataDownloader(object):
         self.save_path = save_path
 
     @staticmethod
-    def request_until_success(url, wait_seconds_if_fail=65):
+    def request_until_success(url, wait_seconds_if_fail=70):
         """
         Download data by HTTPS request
         :param url: requested URL
@@ -52,10 +52,10 @@ class DataDownloader(object):
 class BitfinexDownloader(DataDownloader):
     def __init__(self,
                  coin: str = 'BTC',
-                 start_date: str = '20210601',
-                 end_date: str = '20210801',  # NOT included!
+                 start_date: str = '20210325',
+                 end_date: str = '20210401',  # NOT included!
                  interval: str = '1D',
-                 limitation=9995,
+                 limitation=9990,
                  save_path=None,
                  pair_currency='USD'
                  ):
@@ -235,9 +235,9 @@ def main(args: List[str] = None):
         argv = {a.split('=')[0]: a.split('=')[1] for a in args[1:]}
     coins = argv.get('coin', 'BTC')
     coins_list = coins.split(',')
-    start_date = argv.get('start', '20210201')
-    end_date = argv.get('end', '20210501')
-    intervals = argv.get('interval', '1h')
+    start_date = argv.get('start', '2021-03-25')
+    end_date = argv.get('end', '2021-04-01')
+    intervals = argv.get('interval', '1D')
     intervals_list = intervals.split(',')
     output = argv.get('output', None)
 

@@ -38,13 +38,13 @@ def check_integrity(start_at, end_before, csv_file, interval=None):
 
 
 def timestamp_to_datestring(timestamp):
-    date = datetime.datetime.fromtimestamp(float(timestamp) / 1000.0)
+    date = datetime.datetime.fromtimestamp(float(timestamp) / 1000.0).astimezone(pytz.utc)
     datestring = date.strftime(date_string_format)
     return datestring
 
 
 def datestring_to_timestamp(datestring):
-    return int(time.mktime(ciso8601.parse_datetime(datestring+"T00:00:00Z").timetuple()) * 1000)
+    return int(ciso8601.parse_datetime(datestring+"T00:00:00Z").timestamp() * 1000)
 
 
 def interval_to_ms(interval: str):

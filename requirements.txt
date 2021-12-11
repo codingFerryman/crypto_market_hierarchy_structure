@@ -4,3 +4,4 @@ coloredlogs
 pandas
 tqdm
 jupyter
+pytz
