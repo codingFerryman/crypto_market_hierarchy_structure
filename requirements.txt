@@ -7,3 +7,4 @@ jupyter
 pytz
 planarity
 networkx
+scipy
