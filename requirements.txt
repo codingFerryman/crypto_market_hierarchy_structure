@@ -3,3 +3,4 @@ ciso8601
 coloredlogs
 pandas
 tqdm
+jupyter
