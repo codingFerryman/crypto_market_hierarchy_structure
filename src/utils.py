@@ -10,19 +10,19 @@ import pandas as pd
 date_string_format = '%Y-%m-%d %H:%M:%S'
 
 
-def check_integrity(start_at, end_before, csv_file, interval=None):
+def check_integrity(start_from, end_before, csv_file, interval=None):
     """
     Check the integrity of a datafile
-    :param start_at: YYYYMMDD the start date
+    :param start_from: YYYYMMDD the start date
     :param end_before: YYYYMMDD the end date
     :param csv_file: data csv file path
     :param interval: default by the interval in the filename
     :return: return the complete data in the given period, or None
     """
     integrity_flag = False
-    start_timestamp = datestring_to_timestamp(start_at)
+    start_timestamp = datestring_to_timestamp(start_from)
     end_timestamp = datestring_to_timestamp(end_before)
-    data_df = pd.read_csv(csv_file).set_index("timestamp")
+    data_df = pd.read_csv(csv_file).set_index(["timestamp", "coin"])
     if interval is None:
         interval = Path(csv_file).stem.split('_')[-1]
     if interval == '1W':
@@ -49,6 +49,33 @@ def check_integrity(start_at, end_before, csv_file, interval=None):
         return None
 
 
+def load_data(start_from_timestamp, end_before_timestamp, file_path, fill_na=False, price='close', interval=None):
+    prices = ['open', 'close', 'high', 'low']
+    select_prices = price.split(',')
+    remove_prices = list(set(prices) - set(select_prices))
+    if interval is None:
+        interval = Path(file_path).stem.split('_')[-1]
+    data_df = pd.read_csv(file_path).set_index(["timestamp", "coin"])
+    data_df = data_df.loc[start_from_timestamp:end_before_timestamp]
+    data_df['datetime'] = data_df.index.get_level_values('timestamp').map(timestamp_to_datetime)
+    data_df = data_df.drop(columns=remove_prices)
+    data_df['is_fill'] = False
+    if fill_na:
+        golden_timestamps = get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval)
+        data_df = my_fillna(data_df, golden_timestamps, select_prices)
+    return data_df
+
+
+def get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval):
+    interval_ms = interval_to_ms(interval)
+    golden_timestamps = []
+    _timestamp = start_from_timestamp
+    while _timestamp <= end_before_timestamp:
+        golden_timestamps.append(_timestamp)
+        _timestamp += interval_ms
+    return golden_timestamps
+
+
 def datestring_to_timestamp(datestring):
     return int(ciso8601.parse_datetime(datestring+"T00:00:00Z").timestamp() * 1000)
 
@@ -57,13 +84,24 @@ def timestamp_to_datetime(timestamp):
     return datetime.datetime.fromtimestamp(float(timestamp) / 1000.0).astimezone(pytz.utc)
 
 
+def my_fillna(one_coin_data_df, golden_timestamps, fill_col):
+    check_coin = set(one_coin_data_df.index.get_level_values("coin")).pop()
+    df_for_check = pd.DataFrame({"timestamp": golden_timestamps, "coin": check_coin}).set_index(["timestamp", "coin"])
+    joined_check_df = df_for_check.join(one_coin_data_df)
+    joined_check_df['datetime'] = df_for_check.index.get_level_values('timestamp').map(timestamp_to_datetime)
+    fill_col.append('volume')
+    for col in fill_col:
+        joined_check_df[col] = joined_check_df[col].interpolate()
+        joined_check_df['is_fill'] = joined_check_df['is_fill'].fillna(True)
+    return joined_check_df
+
+
+
+
 def timestamp_to_datestring(timestamp):
     date = timestamp_to_datetime(timestamp)
     datestring = date.strftime(date_string_format)
     return datestring
-
-
-
 
 
 def interval_to_ms(interval: str):
