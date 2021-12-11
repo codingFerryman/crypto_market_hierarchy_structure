@@ -9,7 +9,7 @@
 CODES=$(tr -d "\n\r" < cryptocurrency_code.txt)
 
 # Intervals
-INTERVALS="1D,1W,3h,30m"
+INTERVALS="5m"
 
 # Download
 python src/data_downloader.py \
