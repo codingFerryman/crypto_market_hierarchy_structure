@@ -25,6 +25,18 @@ def check_integrity(start_at, end_before, csv_file, interval=None):
     data_df = pd.read_csv(csv_file).set_index("timestamp")
     if interval is None:
         interval = Path(csv_file).stem.split('_')[-1]
+    if interval == '1W':
+        start_date = timestamp_to_datetime(start_timestamp)
+        end_date = timestamp_to_datetime(end_timestamp)
+        start_weekday = start_date.isoweekday()
+        end_weekday = end_date.isoweekday()
+        if start_weekday != 1:
+            start_date += datetime.timedelta(days=8 - start_weekday)
+            start_timestamp = int(start_date.timestamp()) * 1000
+        if end_weekday != 1:
+            end_date += datetime.timedelta(days=1 - end_weekday)
+            end_timestamp = int(end_date.timestamp()) * 1000
+
     interval_ms = interval_to_ms(interval)
     golden_num = 1 + (end_timestamp - start_timestamp) // interval_ms
     if (start_timestamp in data_df.index) and (end_timestamp in data_df.index):
@@ -36,9 +48,11 @@ def check_integrity(start_at, end_before, csv_file, interval=None):
     else:
         return None
 
+def timestamp_to_datetime(timestamp):
+    return datetime.datetime.fromtimestamp(float(timestamp) / 1000.0).astimezone(pytz.utc)
 
 def timestamp_to_datestring(timestamp):
-    date = datetime.datetime.fromtimestamp(float(timestamp) / 1000.0).astimezone(pytz.utc)
+    date = timestamp_to_datetime(timestamp)
     datestring = date.strftime(date_string_format)
     return datestring
 
