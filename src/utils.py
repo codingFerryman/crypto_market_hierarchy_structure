@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-
+import pytz
 import coloredlogs
 import datetime
 import time
@@ -44,7 +44,7 @@ def timestamp_to_datestring(timestamp):
 
 
 def datestring_to_timestamp(datestring):
-    return int(time.mktime(ciso8601.parse_datetime(datestring).timetuple()) * 1000)
+    return int(time.mktime(ciso8601.parse_datetime(datestring+"T00:00:00Z").timetuple()) * 1000)
 
 
 def interval_to_ms(interval: str):
