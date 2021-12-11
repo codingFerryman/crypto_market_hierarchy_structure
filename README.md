@@ -14,7 +14,7 @@ bash ./setup_env.sh
 ### Download data
 Execute from [data_downloader.py](src/data_downloader.py). An example:
 ```python3
-python src/data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" start="20210101" end="20211101" interval="1m"
+python src/data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" start="2021-01-01" end="2021-11-01" interval="1m"
 ```
 Arguments:
 - coin: "code-of-coin(s)", separated by comma(s). 
