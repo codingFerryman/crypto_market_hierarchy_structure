@@ -52,8 +52,8 @@ class DataDownloader(object):
 class BitfinexDownloader(DataDownloader):
     def __init__(self,
                  coin: str = 'BTC',
-                 start_date: str = '20210325',
-                 end_date: str = '20210401',  # NOT included!
+                 start_date: str = '2021-03-25',
+                 end_date: str = '2021-04-01',  # NOT included!
                  interval: str = '1D',
                  limitation=9990,
                  save_path=None,
@@ -62,8 +62,8 @@ class BitfinexDownloader(DataDownloader):
         """
         Data downloader for Bitfinex
         :param coin: the code of a crypto
-        :param start_date: the first day (incl.) YYYYMMDD or YYYY-MM-DD
-        :param end_date: the last day (NOT incl.) YYYYMMDD or YYYY-MM-DD
+        :param start_date: the first day (incl.) YYYY-MM-DD
+        :param end_date: the last day (NOT incl.) YYYY-MM-DD
         :param interval: i.e. frequency of price changes
         :param limitation: the maximum number of entries per request
         :param save_path: output path
