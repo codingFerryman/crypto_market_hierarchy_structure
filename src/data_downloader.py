@@ -110,7 +110,7 @@ class BitfinexDownloader(DataDownloader):
         elif _symbol_2 in symbol_supported:
             return _symbol_2
         else:
-            raise Exception('Coin {coin} or currency {pair_currency} is not supported.')
+            raise Exception(f'Coin {coin} or currency {pair_currency} is not supported.')
 
     def convert_coin_to_symbol(self, coin):
         """
@@ -241,10 +241,10 @@ def main(args: List[str] = None):
     intervals_list = intervals.split(',')
     output = argv.get('output', None)
 
-    _zipped_list = list(itertools.product(coins_list, intervals_list))
+    _zipped_list = list(itertools.product(intervals_list, coins_list))
     logger.info(f"Downloading: {len(coins_list)} coin(s) from {start_date} to {end_date} in {intervals_list} ...")
 
-    for coin, interval in tqdm(_zipped_list) if logger.level != logging.DEBUG else _zipped_list:
+    for interval, coin in tqdm(_zipped_list) if logger.level != logging.DEBUG else _zipped_list:
         d = BitfinexDownloader(coin=coin, start_date=start_date, end_date=end_date, interval=interval, save_path=output)
         d.generate_candle_request_url_list()
         d.download_and_save_candle()

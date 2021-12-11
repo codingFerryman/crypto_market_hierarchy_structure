@@ -21,7 +21,7 @@ interval=$INTERVALS
 python src/data_downloader.py \
 coin=$CODES \
 start="2021-08-14" \
-end="2021-08-18" \
+end="2021-10-18" \
 interval=$INTERVALS
 
 
