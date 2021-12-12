@@ -49,7 +49,19 @@ def check_integrity(start_from, end_before, csv_file, interval=None):
         return None
 
 
-def load_data(start_from_timestamp, end_before_timestamp, file_path, fill_na=False, price='close', interval=None):
+def load_data(start_from, end_before, file_path, fill_na=False, price='close', interval=None, **kwargs):
+    start_from_timestamp = kwargs.get('start_from_timestamp', None)
+    end_before_timestamp = kwargs.get('end_before_timestamp', None)
+    if start_from_timestamp is None and start_from:
+        if type(start_from) is str:
+            start_from_timestamp = datestring_to_timestamp(start_from)
+        else:
+            start_from_timestamp = start_from
+    if end_before_timestamp is None and end_before:
+        if type(end_before) is str:
+            end_before_timestamp = datestring_to_timestamp(end_before)
+        else:
+            end_before_timestamp = end_before
     prices = ['open', 'close', 'high', 'low']
     select_prices = price.split(',')
     remove_prices = list(set(prices) - set(select_prices))
