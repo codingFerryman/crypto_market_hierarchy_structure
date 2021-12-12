@@ -56,7 +56,11 @@ def load_data(start_from_timestamp, end_before_timestamp, file_path, fill_na=Fal
     if interval is None:
         interval = Path(file_path).stem.split('_')[-1]
     data_df = pd.read_csv(file_path).set_index(["timestamp", "coin"])
-    data_df = data_df.loc[start_from_timestamp:end_before_timestamp]
+    if (start_from_timestamp is not None) and (end_before_timestamp is not None):
+        data_df = data_df.loc[start_from_timestamp:end_before_timestamp]
+    else:
+        start_from_timestamp = min(data_df.index.get_level_values(level='timestamp')) if start_from_timestamp is None else start_from_timestamp
+        end_before_timestamp = max(data_df.index.get_level_values(level='timestamp')) if end_before_timestamp is None else end_before_timestamp
     data_df['datetime'] = data_df.index.get_level_values('timestamp').map(timestamp_to_datetime)
     data_df = data_df.drop(columns=remove_prices)
     data_df['is_fill'] = False
