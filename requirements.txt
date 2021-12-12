@@ -9,3 +9,4 @@ planarity
 networkx
 scipy
 matplotlib
+scikit-learn
