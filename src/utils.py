@@ -1,3 +1,9 @@
+import os
+from sklearn.preprocessing import MinMaxScaler
+
+from traitlets import Bool
+from typing import List
+
 import logging
 from pathlib import Path
 import pytz
@@ -49,7 +55,70 @@ def check_integrity(start_from, end_before, csv_file, interval=None):
         return None
 
 
+def get_sorted_fluctuation_coins(start_from, end_before,
+                                 data_dir,
+                                 normalize_price: bool = False,
+                                 incl_coins: List = None,
+                                 return_details: bool = False,
+                                 **kwargs):
+    _coins_df_list = []
+    _coins_path_list = [p for p in Path(data_dir).iterdir() if p.suffix == '.csv']
+    for coin_path in _coins_path_list:
+        _coins_df_list.append(load_data(start_from, end_before, coin_path, fill_na=False, price='close'))
+    coins_df = pd.concat(_coins_df_list)
+    if incl_coins is not None:
+        coins_df = coins_df[coins_df.index.isin(incl_coins, level='coin')]
+    if normalize_price:
+        _normalized_df_list = []
+        for coin in coins_df.index.get_level_values('coin'):
+            scaler = MinMaxScaler()
+            _tmp_df = coins_df[coins_df.index.get_level_values('coin') == coin].copy()
+            _tmp_df['close'] = scaler.fit_transform(_tmp_df[['close']])
+            _normalized_df_list.append(_tmp_df)
+        coins_df = pd.concat(_normalized_df_list)
+    coins_df = coins_df.drop('is_fill', axis=1)
+    std_df = coins_df.groupby('coin').agg(
+        {
+            'close': 'std',
+            'volume': 'sum'
+        }
+    )
+    std_df = std_df.rename(columns={'close': 'close_std', 'volume': 'volume_sum'})
+    result = std_df.sort_values('close_std', ascending=False, axis=0)
+    if return_details:
+        return result
+    else:
+        return result.index.to_list()
+
+
+
 def load_data(start_from, end_before, file_path, fill_na=False, price='close', interval=None, **kwargs):
+    start_from_timestamp, end_before_timestamp = _adapt_input(start_from=start_from, end_before=end_before, **kwargs)
+    prices = ['open', 'close', 'high', 'low']
+    select_prices = price.split(',')
+    remove_prices = list(set(prices) - set(select_prices))
+    if interval is None:
+        interval = Path(file_path).stem.split('_')[-1]
+    data_df = pd.read_csv(file_path).set_index(["timestamp", "coin"])
+    if (start_from_timestamp is not None) and (end_before_timestamp is not None):
+        data_df = data_df.loc[start_from_timestamp:end_before_timestamp]
+    else:
+        start_from_timestamp = min(
+            data_df.index.get_level_values(level='timestamp')) if start_from_timestamp is None else start_from_timestamp
+        end_before_timestamp = max(
+            data_df.index.get_level_values(level='timestamp')) if end_before_timestamp is None else end_before_timestamp
+    data_df['datetime'] = data_df.index.get_level_values('timestamp').map(timestamp_to_datetime)
+    data_df = data_df.drop(columns=remove_prices)
+    data_df['is_fill'] = False
+    if fill_na:
+        golden_timestamps = get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval)
+        data_df = my_fillna(data_df, golden_timestamps, select_prices)
+    return data_df
+
+
+def _adapt_input(**kwargs):
+    start_from = kwargs.get('start_from', None)
+    end_before = kwargs.get('end_before', None)
     start_from_timestamp = kwargs.get('start_from_timestamp', None)
     end_before_timestamp = kwargs.get('end_before_timestamp', None)
     if start_from_timestamp is None and start_from:
@@ -62,24 +131,7 @@ def load_data(start_from, end_before, file_path, fill_na=False, price='close', i
             end_before_timestamp = datestring_to_timestamp(end_before)
         else:
             end_before_timestamp = end_before
-    prices = ['open', 'close', 'high', 'low']
-    select_prices = price.split(',')
-    remove_prices = list(set(prices) - set(select_prices))
-    if interval is None:
-        interval = Path(file_path).stem.split('_')[-1]
-    data_df = pd.read_csv(file_path).set_index(["timestamp", "coin"])
-    if (start_from_timestamp is not None) and (end_before_timestamp is not None):
-        data_df = data_df.loc[start_from_timestamp:end_before_timestamp]
-    else:
-        start_from_timestamp = min(data_df.index.get_level_values(level='timestamp')) if start_from_timestamp is None else start_from_timestamp
-        end_before_timestamp = max(data_df.index.get_level_values(level='timestamp')) if end_before_timestamp is None else end_before_timestamp
-    data_df['datetime'] = data_df.index.get_level_values('timestamp').map(timestamp_to_datetime)
-    data_df = data_df.drop(columns=remove_prices)
-    data_df['is_fill'] = False
-    if fill_na:
-        golden_timestamps = get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval)
-        data_df = my_fillna(data_df, golden_timestamps, select_prices)
-    return data_df
+    return start_from_timestamp, end_before_timestamp
 
 
 def get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval):
@@ -93,7 +145,7 @@ def get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval):
 
 
 def datestring_to_timestamp(datestring):
-    return int(ciso8601.parse_datetime(datestring+"T00:00:00Z").timestamp() * 1000)
+    return int(ciso8601.parse_datetime(datestring + "T00:00:00Z").timestamp() * 1000)
 
 
 def timestamp_to_datetime(timestamp):
@@ -110,8 +162,6 @@ def my_fillna(one_coin_data_df, golden_timestamps, fill_col):
         joined_check_df[col] = joined_check_df[col].interpolate()
         joined_check_df['is_fill'] = joined_check_df['is_fill'].fillna(True)
     return joined_check_df
-
-
 
 
 def timestamp_to_datestring(timestamp):
