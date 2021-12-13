@@ -61,6 +61,17 @@ def get_sorted_fluctuation_coins(start_from, end_before,
                                  incl_coins: List = None,
                                  return_details: bool = False,
                                  **kwargs):
+    """
+        start_from (str, int): the timestamp or datestring of the first day
+        end_before (str, int): the timestamp or datestring of the last day
+        data_dir   (str):   the path if directory which has .csv files
+        normalize_price (bool): use MinMaxScaler() to normalize the close price if True
+        incl_coins (list, None): only return the coins in this provided list; None to return all coins
+        return_details (bool): return the standard deviations in a DataFrame if True; False to only return a list with coin codes
+        [DEPRECATED] start_from_timestamp (int): the timestamp of the first day
+        [DEPRECATED] end_before_timestamp (int): the timestamp of the last day
+    )
+    """
     _coins_df_list = []
     _coins_path_list = [p for p in Path(data_dir).iterdir() if p.suffix == '.csv']
     for coin_path in _coins_path_list:
