@@ -1,15 +1,10 @@
-import os
 from sklearn.preprocessing import MinMaxScaler
-
-from traitlets import Bool
 from typing import List
-
 import logging
 from pathlib import Path
 import pytz
 import coloredlogs
 import datetime
-import time
 import ciso8601
 import pandas as pd
 
@@ -102,7 +97,6 @@ def get_sorted_fluctuation_coins(start_from, end_before,
         return result.index.to_list()
 
 
-
 def load_data(start_from, end_before, file_path, fill_na=False, price='close', interval=None, **kwargs):
     start_from_timestamp, end_before_timestamp = _adapt_input(start_from=start_from, end_before=end_before, **kwargs)
     prices = ['open', 'close', 'high', 'low']
@@ -121,7 +115,7 @@ def load_data(start_from, end_before, file_path, fill_na=False, price='close', i
     data_df['datetime'] = data_df.index.get_level_values('timestamp').map(timestamp_to_datetime)
     data_df = data_df.drop(columns=remove_prices)
     data_df['is_fill'] = False
-    if fill_na:
+    if fill_na and len(data_df) > 0:
         golden_timestamps = get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval)
         data_df = my_fillna(data_df, golden_timestamps, select_prices)
     return data_df
