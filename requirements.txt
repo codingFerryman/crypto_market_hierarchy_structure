@@ -10,3 +10,6 @@ networkx
 scipy
 matplotlib
 scikit-learn
+mplfinance
+seaborn
+numpy
