@@ -139,7 +139,8 @@ def _adapt_input(**kwargs):
     return start_from_timestamp, end_before_timestamp
 
 
-def get_golden_timestamps(start_from_timestamp, end_before_timestamp, interval):
+def get_golden_timestamps(start_from, end_before, interval, **kwargs):
+    start_from_timestamp, end_before_timestamp = _adapt_input(start_from=start_from, end_before=end_before, **kwargs)
     interval_ms = interval_to_ms(interval)
     golden_timestamps = []
     _timestamp = start_from_timestamp
