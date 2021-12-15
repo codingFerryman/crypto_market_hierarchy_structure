@@ -7,6 +7,7 @@ import coloredlogs
 import datetime
 import ciso8601
 import pandas as pd
+import numpy as np
 
 date_string_format = '%Y-%m-%d %H:%M:%S'
 
@@ -14,8 +15,8 @@ date_string_format = '%Y-%m-%d %H:%M:%S'
 def check_integrity(start_from, end_before, csv_file, interval=None):
     """
     Check the integrity of a datafile
-    :param start_from: YYYYMMDD the start date
-    :param end_before: YYYYMMDD the end date
+    :param start_from: YYYY-MM-DD the start date
+    :param end_before: YYYY-MM-DD the end date
     :param csv_file: data csv file path
     :param interval: default by the interval in the filename
     :return: return the complete data in the given period, or None
@@ -48,6 +49,28 @@ def check_integrity(start_from, end_before, csv_file, interval=None):
         return data_select
     else:
         return None
+
+
+def check_integrity_score(start_from, end_before, coins, data_dir='./data', check_intervals=['3h', '30m']):
+    """
+    Calculate integrity score for each coin
+    :param start_from: YYYY-MM-DD the start date, or a timestamp
+    :param end_before: YYYY-MM-DD the end date, or a timestamp
+    :param coins: list of coin codes
+    :param data_dir: the path of data directory
+    :param check_intervals: list of intervals
+    :return: dict of scores
+    """
+    _coins_integrity = {}
+    for _interval in check_intervals:
+        _coins_integrity[_interval] = {}
+        _data_interval_dir = Path(data_dir, _interval)
+        for _coin in coins:
+            _file_path = Path(_data_interval_dir, f"{_coin}_USD_{_interval}.csv")
+            _c_df = load_data(start_from, end_before, _file_path, fill_na=True)
+            _coins_integrity[_interval][_coin] = len(_c_df[_c_df.is_fill == False]) / len(_c_df)
+        print(f"The integrity score of {_interval} data: {np.mean(list(_coins_integrity[_interval].values()))}")
+    return _coins_integrity
 
 
 def get_sorted_fluctuation_coins(start_from, end_before,
