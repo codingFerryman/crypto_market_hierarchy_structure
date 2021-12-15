@@ -1,5 +1,5 @@
 from sklearn.preprocessing import MinMaxScaler
-from typing import List
+from typing import List, Dict
 import logging
 from pathlib import Path
 import pytz
@@ -51,7 +51,8 @@ def check_integrity(start_from, end_before, csv_file, interval=None):
         return None
 
 
-def check_integrity_score(start_from, end_before, coins, data_dir='./data', check_intervals=['3h', '30m']):
+def check_integrity_score(start_from, end_before, coins: List, data_dir='./data',
+                          check_intervals: List = ['3h', '30m']) -> Dict:
     """
     Calculate integrity score for each coin
     :param start_from: YYYY-MM-DD the start date, or a timestamp
@@ -120,7 +121,7 @@ def get_sorted_fluctuation_coins(start_from, end_before,
         return result.index.to_list()
 
 
-def load_data(start_from, end_before, file_path, fill_na=False, price='close', interval=None, **kwargs):
+def load_data(start_from, end_before, file_path, fill_na=False, price='close', interval=None, **kwargs) -> pd.DataFrame:
     start_from_timestamp, end_before_timestamp = _adapt_input(start_from=start_from, end_before=end_before, **kwargs)
     prices = ['open', 'close', 'high', 'low']
     select_prices = price.split(',')
