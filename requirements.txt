@@ -13,4 +13,3 @@ scikit-learn
 mplfinance
 seaborn
 numpy
-sklearn
