@@ -1,3 +1,2 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:483f7356a518aaeb270bd93844d511c9f3122d69aa6a1803abdd756e9d77fa85
-size 121
+timestamp,coin,open,close,high,low,volume,datetime
+1638316800000,CRV,10,5.97,10,4.7772,3506.82302858,2021-12-01 00:00:00
