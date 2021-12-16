@@ -12,3 +12,6 @@ pip install --upgrade pip setuptools wheel
 # Install the requirements
 pip install -U Cython
 pip install -r $SCRIPT_DIR/requirements.txt
+
+# Pull data
+git lfs pull
