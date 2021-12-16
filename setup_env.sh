@@ -14,4 +14,5 @@ pip install -U Cython
 pip install -r $SCRIPT_DIR/requirements.txt
 
 # Pull data
+git lfs install
 git lfs pull
