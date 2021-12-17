@@ -4,17 +4,14 @@ This repository is for the project in the course [Network Science](https://www.i
 
 
 ## File descriptions
-[setup_env.sh](./setup_env.sh) Bash script to perform data download. Please look into the file for its detailed description.
-
-[get_coin_code.py](./get_coin_code.py) The code to obtain the code of coins from Bitfinex. The result is in [cryptocurrency_code.txt](./cryptocurrency_code.txt).
-
-[stablecoin.txt](./stablecoin.txt) The code of stablecoins we considered in the project.
-
-[exploration.ipynb](./src/exploration.ipynb) Data exploration including integrity check, fluctuation investigation, and stablecoin analysis.
-
-[crypto_correlation.ipynb](./src/crypto_correlation.ipynb) It loads data and calculates correlation matrics in different timescales.
-
-[community.ipynb](./src/community.ipynb) The implementation of community analysis.
+|File name|Description|
+|---|---|
+|[setup_env.sh](./setup_env.sh) | Bash script to perform data download. Please look into the file for its detailed description.|
+|[get_coin_code.py](./get_coin_code.py) | The code to obtain the code of coins from Bitfinex. The result is in [cryptocurrency_code.txt](./cryptocurrency_code.txt).|
+|[stablecoin.txt](./stablecoin.txt) | The code of stablecoins we considered in the project.|
+|[exploration.ipynb](./src/exploration.ipynb) | Data exploration including integrity check, fluctuation investigation, and stablecoin analysis.|
+|[crypto_correlation.ipynb](./src/crypto_correlation.ipynb) | It loads data and calculates correlation matrics in different timescales.|
+|[community.ipynb](./src/community.ipynb) | The implementation of community analysis.|
 
 
 ## Environment setup
