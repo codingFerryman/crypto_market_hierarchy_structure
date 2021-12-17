@@ -1,17 +1,30 @@
+# Multi-timescale correlation network structures of the cryptocurrency prices
+
 This repository is for the project in the course [Network Science](https://www.ifi.uzh.ch/en/bdlt/Teaching/Network-Science.html)
 
-This project is still in progress.
+
+## File descriptions
+[setup_env.sh](./setup_env.sh) Bash script to perform data download. Please look into the file for its detailed description.
+
+[get_coin_code.py](./get_coin_code.py) The code to obtain the code of coins from Bitfinex. The result is in [cryptocurrency_code.txt](./cryptocurrency_code.txt).
+
+[stablecoin.txt](./stablecoin.txt) The code of stablecoins we considered in the project.
+
+[exploration.ipynb](./src/exploration.ipynb) Data exploration including integrity check, fluctuation investigation, and stablecoin analysis.
+
+[crypto_correlation.ipynb](./src/crypto_correlation.ipynb) It loads data and calculates correlation matrics in different timescales.
+
+[community.ipynb](./src/community.ipynb) The implementation of community analysis.
 
 
-## Setup
+## Environment setup
 After cloning this repository, please create or activate a virtual environment, then execute:
 ```bash
 cd PATH-TO-REPO-DIR
 bash ./setup_env.sh
 ```
 
-## Execution
-### Download data
+## Data download
 Execute from [data_downloader.py](src/data_downloader.py). An example:
 ```python3
 python src/data_downloader.py coin="BTC,ETH,AVAX,SOL,LUNA,LTC,ZEC,TRX,DOT,XRP,CTK" start="2021-01-01" end="2021-11-01" interval="1m"
