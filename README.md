@@ -12,6 +12,8 @@ This repository is for the project in the course [Network Science](https://www.i
 |[exploration.ipynb](./src/exploration.ipynb) | Data exploration including integrity check, fluctuation investigation, and stablecoin analysis.|
 |[crypto_correlation.ipynb](./src/crypto_correlation.ipynb) | It loads data and calculates correlation matrics in different timescales.|
 |[community.ipynb](./src/community.ipynb) | The implementation of community analysis.|
+|[30m_MST_per_day.ipynb](./src/30m_MST_per_day.ipynb) | MST similarity analysis.|
+|[MST_series_gif.m](./src/MST_series_gif.m) | MST series animation using MatLab.|
 
 
 ## Environment setup
