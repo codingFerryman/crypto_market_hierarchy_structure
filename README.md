@@ -14,7 +14,8 @@ This repository is for the project in the course [Network Science](https://www.i
 |[community.ipynb](./src/community.ipynb) | The implementation of community analysis.|
 |[30m_MST_per_day.ipynb](./src/30m_MST_per_day.ipynb) | MST similarity analysis.|
 |[MST_series_gif.m](./src/MST_series_gif.m) | MST series animation using MatLab.|
-
+|[graph_generation.ipynb](./src/graph_generation.ipynb) | This is the file for functions that generate networks from matrices by MST and PMFG. |
+|[degree_analysis.ipynb](./src/degree_analysis.ipynb) | This is file for functions and part of the resulting figures of degree analysis on cryptocurrency networks. |
 
 ## Environment setup
 After cloning this repository, please create or activate a virtual environment, then execute:
