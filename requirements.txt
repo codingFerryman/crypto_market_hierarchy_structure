@@ -13,3 +13,4 @@ scikit-learn
 mplfinance
 seaborn
 numpy
+import-ipynb
