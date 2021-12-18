@@ -11,7 +11,7 @@ This repository is for the project in the course [Network Science](https://www.i
 |[stablecoin.txt](./stablecoin.txt) | The code of stablecoins we considered in the project.|
 |[exploration.ipynb](./src/exploration.ipynb) | Data exploration including integrity check, fluctuation investigation, and stablecoin analysis.|
 |[crypto_correlation.ipynb](./src/crypto_correlation.ipynb) | It loads data and calculates correlation matrics in different timescales.|
-|[community.ipynb](./src/community.ipynb) | The implementation of community analysis.|
+|[community.ipynb](./src/community.ipynb) | The implementation of community analysis. Note: GitHub has rendering error on this file, please download it or take a look at [nbviewer](https://nbviewer.org/github/codingFerryman/crypto_market_hierarchy_structure/blob/main/src/community.ipynb) for a view.|
 |[30m_MST_per_day.ipynb](./src/30m_MST_per_day.ipynb) | MST similarity analysis.|
 |[MST_series_gif.m](./src/MST_series_gif.m) | MST series animation using MatLab.|
 |[graph_generation.ipynb](./src/graph_generation.ipynb) | This is the file for functions that generate networks from matrices by MST and PMFG. |
