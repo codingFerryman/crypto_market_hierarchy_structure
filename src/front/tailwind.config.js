@@ -1,10 +1,18 @@
 module.exports = {
+  mode: "jit",
   content: [
-    "./index.html", 
-    "./src/**/*.{vue,js,ts,jsx,tsx}"
+    "./components/**/*.{vue,js}",
+    "./layouts/**/*.vue",
+    "./pages/**/*.vue",
+    "./plugins/**/*.{js,ts}",
+    "./nuxt.config.{js,ts}",
   ],
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
     extend: {},
   },
+  variants: {
+    extend: {},
+  },
   plugins: [],
-}
+};

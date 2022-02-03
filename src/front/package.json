@@ -1,23 +1,18 @@
 {
-  "name": "front",
-  "license": "MIT",
-  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "vue": "^3.2.25",
-    "vue-router": "^3.5.3"
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.0.0",
     "autoprefixer": "^10.4.2",
-    "postcss": "^8.4.5",
-    "tailwindcss": "^3.0.15",
-    "typescript": "^4.4.4",
-    "vite": "^2.7.2",
-    "vue-tsc": "^0.29.8"
+    "nuxt3": "^3.0.0-27396610.ed4f4f5",
+    "postcss": "^8.4.6"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.4.3",
+    "@heroicons/vue": "^1.0.5",
+    "tailwindcss": "^3.0.18"
   }
 }
