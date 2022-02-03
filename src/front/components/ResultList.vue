@@ -10,7 +10,11 @@
           <!-- Repo name and link -->
           <div class="min-w-0 space-y-3">
             <div class="flex items-center space-x-3">
-              <img class="w-12 h-12 rounded-full lg:w-12 lg:h-12 shadow" src="assets/logos/tf_pos.png" alt="" />
+              <img
+                class="w-12 h-12 rounded-full lg:w-12 lg:h-12 shadow"
+                src="assets/logos/tf_pos.png"
+                alt=""
+              />
               <span class="block">
                 <p class="text-sm font-medium text-gray-500">
                   <a :href="result.tf_image_model_url">

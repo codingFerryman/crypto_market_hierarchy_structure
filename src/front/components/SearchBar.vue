@@ -1,9 +1,7 @@
 <template>
  <div class="flex justify-center">
     <div class="w-1/3 text-center">
-      <h1 class="w-full leading-6 text-2xl text-gray-900">
-        S.E.A.L Search
-      </h1>
+      <img src="assets/logos/seal.svg" class="h-24 mx-auto my-auto">
       <div class="mt-5 lg:flex lg:items-center w-full mb-5">
         <div class="w-full">
             <label for="search" class="sr-only">Search</label>
