@@ -1,21 +1,10 @@
 <template>
   <div class="w-full flex justify-center">
-    <ul
-      role="list"
-      class="w-2/3"
-    >
+    <ul role="list" class="w-2/3">
       <li
         v-for="result in results"
         :key="result.repo"
-        class="
-          relative
-          pl-4
-          pr-6
-          py-5
-          sm:py-6 sm:pl-6
-          lg:pl-8
-          xl:pl-6
-        "
+        class="relative pl-4 pr-6 py-5 sm:py-6 sm:pl-6 lg:pl-8 xl:pl-6"
       >
         <div class="flex items-center justify-between space-x-4">
           <!-- Repo name and link -->
@@ -27,6 +16,7 @@
                     <span class="absolute" aria-hidden="true" />
                     {{ result.tf_image_model_url }}
                   </a>
+                  <MenuIcon class="h-3 w-3 text-gray-400" aria-hidden="true"/>
                 </p>
               </span>
             </div>
@@ -77,11 +67,16 @@ const results = [
   },
 ];
 
+import { MenuIcon } from "@heroicons/vue/solid";
+
 export default {
   setup() {
     return {
       results,
     };
+  },
+  components: {
+    MenuIcon,
   },
 };
 </script>

@@ -1,4 +1,4 @@
 <template>
-    <Header />
+    <Header :show_search="true"/>
     <ResultList />
 </template>

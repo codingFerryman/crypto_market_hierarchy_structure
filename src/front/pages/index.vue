@@ -1,5 +1,5 @@
 <template>
-  <Header />
+  <Header :show_search="false" />
   <div class="align-middle pt-36">
   <SearchBar />
   </div>

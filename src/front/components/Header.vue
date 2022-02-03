@@ -17,6 +17,7 @@
           </div>
           <div class="hidden lg:ml-6 lg:flex lg:space-x-8">
             <div
+              v-if="show_search"
               class="
                 flex-1 flex
                 items-center
@@ -81,8 +82,7 @@
             px-2
             lg:ml-6 lg:justify-end
           "
-        >
-        </div>
+        ></div>
         <div class="flex items-center lg:hidden">
           <!-- Mobile menu button -->
           <DisclosureButton
@@ -376,6 +376,9 @@ import { SearchIcon } from "@heroicons/vue/solid";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/vue/outline";
 
 export default {
+  props:[
+    'show_search'
+  ],
   components: {
     Disclosure,
     DisclosureButton,
