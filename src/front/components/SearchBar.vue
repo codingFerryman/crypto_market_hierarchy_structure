@@ -16,7 +16,7 @@
           </div>
       </div>
       <div class="w-full">
-        <NuxtLink to="/result"> 
+        <NuxtLink to="result"> 
         <button type="submit" class="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-gray-600 bg-slate-100 hover:bg-slate-200 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
             Search
         </button></NuxtLink>

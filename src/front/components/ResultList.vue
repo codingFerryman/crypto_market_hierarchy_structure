@@ -10,13 +10,13 @@
           <!-- Repo name and link -->
           <div class="min-w-0 space-y-3">
             <div class="flex items-center space-x-3">
+              <img class="w-12 h-12 rounded-full lg:w-12 lg:h-12 shadow" src="assets/logos/tf_pos.png" alt="" />
               <span class="block">
                 <p class="text-sm font-medium text-gray-500">
                   <a :href="result.tf_image_model_url">
                     <span class="absolute" aria-hidden="true" />
                     {{ result.tf_image_model_url }}
                   </a>
-                  <MenuIcon class="h-3 w-3 text-gray-400" aria-hidden="true"/>
                 </p>
               </span>
             </div>
@@ -57,13 +57,27 @@ const results = [
     output_key: null,
     required_image_size: { height: 224, width: 224 },
     classifier: "Linear(learning_rate=0.01 num_epochs=2000)",
-    err: 0.1303921568627451,
+    err: 0.1303,
     classify_job_hash:
       "b2640651e91a9f624916d712634a614d96f0a4364e17cc7c4c27432df60daf7b",
     test_reader_name: null,
     start: null,
     stop: null,
     repo: "imagenet/mobilenet_v1_100_224",
+  },
+  {
+    tf_image_model_url:
+      "https://tfhub.dev/tensorflow/efficientnet/b7/feature-vector/1",
+    output_key: null,
+    required_image_size: { height: 224, width: 224 },
+    classifier: "Linear(learning_rate=0.01 num_epochs=2000)",
+    err: 0.1409,
+    classify_job_hash:
+      "b2640651e91a9f624916d712634a614d96f0a4364e17cc7c4c27432df60daf7b",
+    test_reader_name: null,
+    start: null,
+    stop: null,
+    repo: "efficientnet/b7",
   },
 ];
 
