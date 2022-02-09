@@ -8,7 +8,7 @@
     "build:dev": "cross-env NODE_OPTIONS=--max-old-space-size=6000 vite build --mode development",
     "build:test": "cross-env NODE_OPTIONS=--max-old-space-size=6000 SERVER_ENV=prod NODE_ENV=production vite build --mode test && cross-env MODE=test node ./scripts/upToCdnProd.js",
     "build:prod": "cross-env NODE_OPTIONS=--max-old-space-size=6000 SERVER_ENV=prod NODE_ENV=production vite build --mode production && cross-env MODE=production node ./scripts/upToCdnProd.js",
-    "dev": "vite --port 3333 --open --mode development",
+    "dev": "vite --port 3000 --open --mode development",
     "lint": "eslint \"**/*.{vue,ts,js}\"",
     "prepare": "husky install",
     "preview": "vite preview",
