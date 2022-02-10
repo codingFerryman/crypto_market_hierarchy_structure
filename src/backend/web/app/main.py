@@ -1,19 +1,23 @@
+import os
 from typing import Optional
 from fastapi import FastAPI
-import boto3
+from app.entities.model import SealModel
+
+from sqlmodel import create_engine, SQLModel
+
+PG_HOST = os.environ['PG_HOST']
+PG_PORT = os.environ['PG_PORT']
+PG_USER = os.environ['PG_USER']
 
 app = FastAPI()
-dynamodb = boto3.resource(
-    'dynamodb',
-    endpoint_url="http://dynamodb-local:8000",
-    region_name='eu-central-1',
-)
+pg_url = "postgresql://{}@{}:{}".format(PG_USER, PG_HOST, PG_PORT)
+engine = create_engine(pg_url)
+SQLModel.metadata.create_all(engine)
 
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Optional[str] = None):
