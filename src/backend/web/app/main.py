@@ -1,24 +1,41 @@
-import os
-from typing import Optional
-from fastapi import FastAPI
-from app.entities.model import SealModel
-
-from sqlmodel import create_engine, SQLModel
-
-PG_HOST = os.environ['PG_HOST']
-PG_PORT = os.environ['PG_PORT']
-PG_USER = os.environ['PG_USER']
+from functools import lru_cache
+from typing import List
+from fastapi import FastAPI, status
+from sqlmodel import Session, create_engine, SQLModel, select
+from app.modules.config import settings
+from app.entities.common import SealDataset, SealModel, Request
 
 app = FastAPI()
-pg_url = "postgresql://{}@{}:{}".format(PG_USER, PG_HOST, PG_PORT)
-engine = create_engine(pg_url)
-SQLModel.metadata.create_all(engine)
 
+@lru_cache
+def get_settings():
+    return settings.Settings()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@lru_cache
+def get_engine():
+    settings = get_settings()
+    pg_url = "postgresql://{}@{}:{}".format(settings.pg_user, settings.pg_host, settings.pg_port)
+    engine = create_engine(pg_url)
+    return engine
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+session = Session(bind=get_engine())
+
+@app.get("/create")
+async def create():
+    engine = get_engine()    
+    SQLModel.metadata.create_all(engine)
+
+@app.get("/datasets", response_model=List[SealDataset], status_code=status.HTTP_200_OK)
+async def get_all_datasets():
+    engine = get_engine()
+    statement = select(SealDataset)
+    with Session(engine) as session:
+        datasets = session.exec(statement).all()
+        return datasets
+
+@app.post('/datasets', response_model=SealDataset, status_code=status.HTTP_201_CREATED)
+async def create_a_dataset(dataset: SealDataset):
+    engine = get_engine()
+    session.add(dataset)
+    session.commit()
+    return dataset
