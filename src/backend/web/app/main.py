@@ -39,3 +39,18 @@ async def create_a_dataset(dataset: SealDataset):
     session.add(dataset)
     session.commit()
     return dataset
+
+@app.get("/models", response_model=List[SealModel], status_code=status.HTTP_200_OK)
+async def get_all_models():
+    engine = get_engine()
+    statement = select(SealModel)
+    with Session(engine) as session:
+        models = session.exec(statement).all()
+        return models
+
+@app.post('/models', response_model=SealModel, status_code=status.HTTP_201_CREATED)
+async def create_a_model(model: SealModel):
+    engine = get_engine()
+    session.add(model)
+    session.commit()
+    return model
