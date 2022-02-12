@@ -1,29 +1,37 @@
 from functools import lru_cache
 from typing import List
-from fastapi import FastAPI, status
-from sqlmodel import Session, create_engine, SQLModel, select
+
+from app.entities.common import Request, SealDataset, SealModel
 from app.modules.config import settings
-from app.entities.common import SealDataset, SealModel, Request
+from fastapi import FastAPI, status
+from sqlmodel import Session, SQLModel, create_engine, select
 
 app = FastAPI()
+
 
 @lru_cache
 def get_settings():
     return settings.Settings()
 
+
 @lru_cache
 def get_engine():
     settings = get_settings()
-    pg_url = "postgresql://{}@{}:{}".format(settings.pg_user, settings.pg_host, settings.pg_port)
+    pg_url = "postgresql://{}@{}:{}".format(
+        settings.pg_user, settings.pg_host, settings.pg_port
+    )
     engine = create_engine(pg_url)
     return engine
 
+
 session = Session(bind=get_engine())
+
 
 @app.get("/create")
 async def create():
-    engine = get_engine()    
+    engine = get_engine()
     SQLModel.metadata.create_all(engine)
+
 
 @app.get("/datasets", response_model=List[SealDataset], status_code=status.HTTP_200_OK)
 async def get_all_datasets():
@@ -33,12 +41,14 @@ async def get_all_datasets():
         datasets = session.exec(statement).all()
         return datasets
 
-@app.post('/datasets', response_model=SealDataset, status_code=status.HTTP_201_CREATED)
+
+@app.post("/datasets", response_model=SealDataset, status_code=status.HTTP_201_CREATED)
 async def create_a_dataset(dataset: SealDataset):
     engine = get_engine()
     session.add(dataset)
     session.commit()
     return dataset
+
 
 @app.get("/models", response_model=List[SealModel], status_code=status.HTTP_200_OK)
 async def get_all_models():
@@ -48,7 +58,8 @@ async def get_all_models():
         models = session.exec(statement).all()
         return models
 
-@app.post('/models', response_model=SealModel, status_code=status.HTTP_201_CREATED)
+
+@app.post("/models", response_model=SealModel, status_code=status.HTTP_201_CREATED)
 async def create_a_model(model: SealModel):
     engine = get_engine()
     session.add(model)
