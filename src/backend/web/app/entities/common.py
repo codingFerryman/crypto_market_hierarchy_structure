@@ -8,8 +8,8 @@ class SealModel(SQLModel, table=True):
     num_params: Optional[int] = None
     feat_size: int
     input_spec: str
+    up_acc: Optional[float]
     owner: str = Field(default='public')
-
 
 class SealDataset(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
