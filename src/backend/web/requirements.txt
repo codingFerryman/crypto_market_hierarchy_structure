@@ -4,3 +4,4 @@ pydantic>=1.8.0
 uvicorn>=0.15.0
 sqlmodel
 python-dotenv
+shiftql-parser
